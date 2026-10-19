@@ -7,7 +7,7 @@ const lightPalette = {
     primary: { main: '#1565c0' },
     secondary: { main: '#c62828' },
     gradient: {
-        main: 'linear-gradient(135deg, #1976d2, #d32f2f)',
+        background: 'linear-gradient(135deg, #1976d2, #d32f2f)',
         contrastText: '#ffffff',
     },
 }
@@ -21,7 +21,7 @@ const darkPalette = {
     primary: { main: '#90caf9' },
     secondary: { main: '#ef9a9a' },
     gradient: {
-        main: 'linear-gradient(135deg, #1976d2, #d32f2f)',
+        background: 'linear-gradient(135deg, #1976d2, #d32f2f)',
         contrastText: '#ffffff',
     },
 }

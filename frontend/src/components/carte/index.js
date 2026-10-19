@@ -1,0 +1,6 @@
+export { default as CelluleCarte } from "./CelluleCarte"
+export { default as HeadCarte } from "./HeadCarte"
+export { default as CelluleRegion } from "./CelulleRegion"
+export { default as CelluleDepartement } from "./CelluleDepartement"
+export { default as CelluleChefLieu } from "./CelulleChefLieu"
+export { default as CelluleResultat } from "./CelulleResultat"

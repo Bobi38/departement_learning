@@ -3,7 +3,7 @@ const MuiPaper = {
 		{
 			props: { variant: 'gradient' },
 			style: ({ theme }) => ({
-				background: theme.palette.gradient.main,
+				background: theme.palette.gradient.background,
 				color: theme.palette.gradient.contrastText,
 				display: 'flex',
 				alignItems: 'center',
