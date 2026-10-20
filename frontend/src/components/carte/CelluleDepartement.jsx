@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Box, Button, Paper, Typography } from "@mui/material";
 
-const CelluleDepartement = ({ guessDepartement, guessPattern, guessData }) =>
+const CelluleDepartement = ({ guessDepartement, guessPattern, guessData, onAnswer }) =>
 {
     const [reponse, setReponse] = useState(null)
 
@@ -10,19 +10,20 @@ const CelluleDepartement = ({ guessDepartement, guessPattern, guessData }) =>
         setReponse(null)
     }, [guessDepartement])
 
-    // 0 = la bonne réponse, 1 à 3 = les mauvaises
     const choix = [guessDepartement, ...guessData]
 
+    const handleResponse = (index) => {
+        setReponse(index)
+        onAnswer(choix[index][1] === guessDepartement[1], choix[index][1])
+    }
+
     const couleur = (index) => {
-        if (reponse === null) return "primary"
-        if (index === 0) return "success"
-        if (index === reponse) return "error"
-        return "inherit"
+        return index === reponse ? "success" : "primary"
     }
 
     return (
-        <Paper sx={{ p: 2 }}>
-            <Typography variant="h6">Département</Typography>
+        <Box sx={{ p: 2 }}>
+            <Typography variant="h6">Département — code {guessDepartement[0]}</Typography>
             <Paper sx={{ p: 2, mb: 2 }}>
                 <Typography>Trouve le département associé au code : {guessDepartement[0]}</Typography>
             </Paper>
@@ -39,19 +40,14 @@ const CelluleDepartement = ({ guessDepartement, guessPattern, guessData }) =>
                             key={index}
                             variant="contained"
                             color={couleur(index)}
-                            onClick={() => reponse === null && setReponse(index)}
+                            onClick={() => {handleResponse(index)}}
                         >
                             {choix[index][1]}
                         </Button>
                     ))}
                 </Box>
             )}
-            {reponse !== null && (
-                <Typography sx={{ mt: 2 }}>
-                    {reponse === 0 ? "Bonne réponse !" : `Raté, c'était ${guessDepartement[1]}.`}
-                </Typography>
-            )}
-        </Paper>
+        </Box>
     )
 }
 

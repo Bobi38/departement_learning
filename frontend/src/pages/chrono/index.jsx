@@ -1,5 +1,6 @@
 import Mainlayout from '../../layout/MainLayout'
 import { Container, Typography } from '@mui/material'
+import HeadChrono from '../../components/chrono/HeadChrono'
 
 const ChronoPage = () =>
 {
@@ -9,6 +10,7 @@ const ChronoPage = () =>
                 <Typography variant="h4" component="h1" gutterBottom>
                     Défi chronométré
                 </Typography>
+                <HeadChrono/>
             </Container>
         </Mainlayout>
     )

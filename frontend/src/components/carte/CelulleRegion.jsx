@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { Box, Button, Paper, Typography } from "@mui/material";
 
-const CelluleRegion = ({ guessDepartement, guessPattern, guessData }) =>
+const CelluleRegion = ({ guessDepartement, guessPattern, guessData, onAnswer }) =>
 {
+    console.log(guessDepartement)
     const [reponse, setReponse] = useState(null)
 
     useEffect(() =>
@@ -12,16 +13,19 @@ const CelluleRegion = ({ guessDepartement, guessPattern, guessData }) =>
 
     const choix = [guessDepartement, ...guessData]
 
+    const handleResponse = (index) => {
+        console.log(choix[index][3], guessDepartement[3])
+        setReponse(index)
+        onAnswer(choix[index][3] == guessDepartement[3], choix[index][3])
+    }
+
     const couleur = (index) => {
-        if (reponse === null) return "primary"
-        if (index === 0) return "success"
-        if (index === reponse) return "error"
-        return "inherit"
+        return index === reponse ? "success" : "primary"
     }
 
     return (
         <Paper sx={{ p: 2 }}>
-            <Typography variant="h6">Région</Typography>
+            <Typography variant="h6">Région — code {guessDepartement[0]}</Typography>
             <Paper sx={{ p: 2, mb: 2 }}>
                 <Typography>Trouve la région associée au code : {guessDepartement[0]}</Typography>
             </Paper>
@@ -38,17 +42,12 @@ const CelluleRegion = ({ guessDepartement, guessPattern, guessData }) =>
                             key={index}
                             variant="contained"
                             color={couleur(index)}
-                            onClick={() => reponse === null && setReponse(index)}
+                            onClick={() => {handleResponse(index)}}
                         >
                             {choix[index][3]}
                         </Button>
                     ))}
                 </Box>
-            )}
-            {reponse !== null && (
-                <Typography sx={{ mt: 2 }}>
-                    {reponse === 0 ? "Bonne réponse !" : `Raté, c'était ${guessDepartement[3]}.`}
-                </Typography>
             )}
         </Paper>
     )

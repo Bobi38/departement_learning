@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import {Button, Paper, Box, Container, Typography, TextField, Stepper, Step, StepLabel} from "@mui/material";
 import { departement, pattern } from "../../data";
+import { settingsZustand } from "../../zustand/settingsZustand.js";
 import CelluleCarte from "./CelluleCarte"
 import CelluleRegion from "./CelulleRegion"
 import CelluleDepartement from "./CelluleDepartement"
@@ -13,6 +14,7 @@ const steps = [
         header : CelluleCarte,
         pattern : [],
         other: [],
+        answerBool : null,
         answer : null,
     },
     {
@@ -20,13 +22,15 @@ const steps = [
         header : CelluleRegion,
         pattern : [],
         other: [],
-        answer : null,
+        answerBool : null,
+        answer: null
     },
     {
         titre : 'Département',
         header : CelluleDepartement,
         pattern : [],
         other: [],
+        answerBool : null,
         answer : null,
     },
     {
@@ -34,6 +38,7 @@ const steps = [
         header : CelluleChefLieu,
         pattern : [],
         other: [],
+        answerBool : null,
         answer : null,
     },
     {
@@ -62,14 +67,16 @@ const randomData = (guess) => {
     return data
 }
 
-const HeadCarte = () =>
+const HeadCarte = ({start, end}) =>
 {
     const [guessDepartement, setGuessDepartement] = useState(null)
     const [partie, setPartie] = useState(steps)
     const [activeStep, setActiveStep] = useState(0);
+    const carte = settingsZustand((state) => state.carte)
 
     const handleRandom = () => {
-        const guess = departement[Math.floor(Math.random() * departement.length)];
+        const plage = departement.slice(carte.start, carte.end + 1)
+        const guess = plage[Math.floor(Math.random() * plage.length)];
         setGuessDepartement(guess);
         setPartie(steps.map((step) => ({
             ...step,
@@ -86,10 +93,9 @@ const HeadCarte = () =>
 
     if (!guessDepartement) return null
 
-    // Enregistre true / false pour l'étape en cours
-    const handleAnswer = (estJuste) => {
+    function handleAnswer(estJuste, response){
         setPartie((current) => current.map((s, index) =>
-            index === activeStep ? { ...s, answer : estJuste } : s
+            index === activeStep ? { ...s, answerBool : estJuste, answer: response } : s
         ))
     }
 
@@ -98,16 +104,19 @@ const HeadCarte = () =>
 
     return (
         <Box>
-            <Stepper activeStep={activeStep} sx={{ mb: 3 }}>
+            <Stepper activeStep={activeStep} sx={{ mb: 3 }} alternativeLabel>
                 {partie.map((cel, index) => (
                     <Step key={index}>
                         <StepLabel>{cel.titre}</StepLabel>
                     </Step>
                 ))}
             </Stepper>
-            <ActiveCellule guessDepartement={guessDepartement} guessPattern={step.pattern} guessData={step.other} onAnswer={handleAnswer} partie={partie} />
+            <Paper sx={{p: 2}}>
+                <Typography variant="h6"></Typography>
+                <ActiveCellule guessDepartement={guessDepartement} guessPattern={step.pattern} guessData={step.other} onAnswer={handleAnswer} partie={partie} steps={steps} />
+            </Paper>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                {activeStep < partie.length - 1 ? (
+                {activeStep < partie.length - 1 && step.answer != null ? (
                     <Button variant="contained" onClick={() => setActiveStep(activeStep + 1)}>
                         Suivant
                     </Button>

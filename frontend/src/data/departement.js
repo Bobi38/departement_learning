@@ -97,6 +97,19 @@ export const departement = [
     ["95", "Val-d'Oise", "Cergy", "Île-de-France"]
 ]
 
+// code : 0 = deviner le code, 1 = la région, 2 = le département, 3 = le chef-lieu
+// question : le code, sauf pour deviner le code où c'est le département
+// index : unique (0 à 383), 4 par département ; position du département = Math.floor(index / 4)
+export const dataChrono = departement.flatMap(([codeDpt, nom, chefLieu, reg], position) => {
+    const index = position * 4
+    return [
+        { index: index, code: 0, response: codeDpt, question: nom },
+        { index: index + 1, code: 1, response: reg, question: codeDpt },
+        { index: index + 2, code: 2, response: nom, question: codeDpt },
+        { index: index + 3, code: 3, response: chefLieu, question: codeDpt },
+    ]
+})
+
 export const region = [
     "Auvergne-Rhône-Alpes",
     "Bourgogne-Franche-Comté",
