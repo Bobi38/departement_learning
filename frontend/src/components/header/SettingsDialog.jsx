@@ -8,6 +8,8 @@ const LAST = departement.length - 1
 export default function SettingsDialog({ open, onClose }) {
     const carte = settingsZustand((state) => state.carte)
     const setCarte = settingsZustand((state) => state.setCarte)
+    const mode = settingsZustand((state) => state.mode)
+    const setMode = settingsZustand((state) => state.setMode)
 
     const handleChange = (event, newValue, activeThumb) => {
         if (!Array.isArray(newValue)) return
@@ -31,7 +33,7 @@ export default function SettingsDialog({ open, onClose }) {
             <DialogContent>
                 <Typography variant="h6" sx={{ mb: 1 }}>Jeu de la carte</Typography>
                 <Typography>
-                    Du {debut[0]} ({debut[1]}) au {fin[0]} ({fin[1]}) : {carte.end - carte.start + 1} départements
+                    Du {debut[0]} ({debut[2]}) au {fin[0]} ({fin[2]}) : {carte.end - carte.start + 1} départements
                 </Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
                     {corses.length > 0
@@ -50,6 +52,11 @@ export default function SettingsDialog({ open, onClose }) {
                     />
                 </Box>
             </DialogContent>
+            <Typography>Avec aide</Typography>
+            <Box>
+                <Button color onClick={() => setMode(0)}>Non</Button>
+                <Button onClick={() => setMode(3)}>Oui</Button>
+            </Box>
             <DialogActions>
                 <Button onClick={() => setCarte({ start: 0, end: LAST })}>Tous</Button>
                 <Button onClick={onClose}>Fermer</Button>

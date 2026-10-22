@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import {Button, Paper, Box, Container, Typography, TextField, Stepper, Step, StepLabel} from "@mui/material";
-import { departement, pattern } from "../../data";
+import { departement, pattern, pattern2 } from "../../data";
 import { settingsZustand } from "../../zustand/settingsZustand.js";
 import CelluleCarte from "./CelluleCarte"
 import CelluleRegion from "./CelulleRegion"
@@ -50,29 +50,32 @@ const steps = [
     }
 ];
 
-const randomPattern = () => {
-    return pattern[Math.floor(Math.random() * pattern.length)];
+// mode = nombre de mauvaises réponses proposées (0 = saisie libre)
+const randomPattern = (mode) => {
+    const liste = mode === 1 ? pattern2 : pattern
+    return liste[Math.floor(Math.random() * liste.length)];
 }
 
-const randomData = (guess) => {
+const randomData = (guess, mode) => {
     const data = []
-    while (data.length < 3) {
+    while (data.length < mode) {
         const candidat = departement[Math.floor(Math.random() * departement.length)]
-        if (candidat[3] === guess[3])
+        if (candidat[1] === guess[1])
             continue
-        if (data.some((d) => d[3] === candidat[3]))
+        if (data.some((d) => d[1] === candidat[1]))
             continue
         data.push(candidat)
     }
     return data
 }
 
-const HeadCarte = ({start, end}) =>
+const HeadCarte = () =>
 {
     const [guessDepartement, setGuessDepartement] = useState(null)
     const [partie, setPartie] = useState(steps)
     const [activeStep, setActiveStep] = useState(0);
     const carte = settingsZustand((state) => state.carte)
+    const mode = settingsZustand((state) => state.mode)
 
     const handleRandom = () => {
         const plage = departement.slice(carte.start, carte.end + 1)
@@ -80,8 +83,8 @@ const HeadCarte = ({start, end}) =>
         setGuessDepartement(guess);
         setPartie(steps.map((step) => ({
             ...step,
-            pattern : randomPattern(),
-            other : randomData(guess),
+            pattern : mode > 0 ? randomPattern(mode) : [],
+            other : randomData(guess, mode),
         })))
         setActiveStep(0)
     }
@@ -113,7 +116,7 @@ const HeadCarte = ({start, end}) =>
             </Stepper>
             <Paper sx={{p: 2}}>
                 <Typography variant="h6"></Typography>
-                <ActiveCellule guessDepartement={guessDepartement} guessPattern={step.pattern} guessData={step.other} onAnswer={handleAnswer} partie={partie} steps={steps} />
+                <ActiveCellule guessDepartement={guessDepartement} guessPattern={step.pattern} guessData={step.other} onAnswer={handleAnswer} mode={mode} partie={partie} steps={steps} />
             </Paper>
             <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
                 {activeStep < partie.length - 1 && step.answer != null ? (

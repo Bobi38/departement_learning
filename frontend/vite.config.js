@@ -6,5 +6,6 @@ export default defineConfig({
   server: {
     port: 6969,
     open: true,
+    host: true,
   },
 })

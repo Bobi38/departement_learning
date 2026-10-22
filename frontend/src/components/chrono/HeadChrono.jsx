@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import {Button, Paper, Box, Container, Typography, TextField, Stepper, Step, StepLabel} from "@mui/material";
-import { departement, pattern, dataChrono } from "../../data";
+import { departement, pattern, pattern2, dataChrono } from "../../data";
+import { settingsZustand } from "../../zustand/settingsZustand.js";
+
 // import CelluleCarte from "./CelluleCarte"
 // import CelluleRegion from "./CelulleRegion"
 // import CelluleDepartement from "./CelluleDepartement"
@@ -53,23 +55,43 @@ import { departement, pattern, dataChrono } from "../../data";
 //     return pattern[Math.floor(Math.random() * pattern.length)];
 // }
 
+const randomPattern = (mode) => {
+    const liste = mode === 1 ? pattern2 : pattern
+    return liste[Math.floor(Math.random() * liste.length)];
+}
 
 const HeadChrono = () =>
-    {
-        console.log(dataChrono)
-        const [guessDepartement, setGuessDepartement] = useState(null)
+{
+        const [data, setData] = useState([])
         const [partie, setPartie] = useState([])
         const [activeStep, setActiveStep] = useState(0);
+        const mode = settingsZustand((state) => state.mode)
         
-        const randomData = () => {
+        const randomData = (guess, mode) => {
             const data = []
-            const tmp = [...dataChrono]
+            while (data.length < mode) {
+                const candidat = departement[Math.floor(Math.random() * departement.length)]
+                if (candidat[0] === guess)
+                    continue
+                if (data.some((d) => d[1] === candidat[1]))
+                    continue
+                data.push(candidat)
+            }
+            return data
+        }
+
+        const randomPartie = () => {
+            const data = []
+            let tmp = [...dataChrono]
             while (data.length < 100) {
                 const i = Math.floor(Math.random() * tmp.length)
-                data.push(tmp.splice(i, 1)[0])
+                const question = tmp.splice(i, 1)[0]
+                data.push(mode > 0 ? { ...question, other: randomData(question.index, mode), pattern: randomPattern(mode) } : question)
             }
+            console.log(data)
             setPartie(data)
         }
+
     // const handleRandom = () => {
     //     const plage = departement.slice(carte.start, carte.end + 1)
     //     const guess = plage[Math.floor(Math.random() * plage.length)];
@@ -84,7 +106,7 @@ const HeadChrono = () =>
 
     useEffect(() =>
     {
-        randomData(dataChrono)
+        randomPartie(dataChrono)
     }, [])
 
     // if (!guessDepartement) return null

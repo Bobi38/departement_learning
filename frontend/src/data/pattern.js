@@ -24,3 +24,8 @@ export const pattern = [
     [3,2,0,1],
     [3,2,1,0]
 ]
+
+export const pattern2 = [
+    [0,1],
+    [1,0]
+]

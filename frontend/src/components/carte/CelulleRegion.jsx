@@ -1,22 +1,30 @@
 import { useState, useEffect } from "react";
-import { Box, Button, Paper, Typography } from "@mui/material";
+import { Box, Button, Paper, TextField, Typography } from "@mui/material";
+import { normaliser } from "../../utils/normaliser";
 
-const CelluleRegion = ({ guessDepartement, guessPattern, guessData, onAnswer }) =>
+const CelluleRegion = ({ guessDepartement, guessPattern, guessData, onAnswer, mode }) =>
 {
     console.log(guessDepartement)
     const [reponse, setReponse] = useState(null)
+    const [saisie, setSaisie] = useState("")
 
     useEffect(() =>
     {
         setReponse(null)
+        setSaisie("")
     }, [guessDepartement])
 
     const choix = [guessDepartement, ...guessData]
 
     const handleResponse = (index) => {
-        console.log(choix[index][3], guessDepartement[3])
         setReponse(index)
-        onAnswer(choix[index][3] == guessDepartement[3], choix[index][3])
+        onAnswer(choix[index][1] == guessDepartement[1], choix[index][1])
+    }
+
+    const handleSaisie = (event) => {
+        event.preventDefault()
+        if (!saisie.trim()) return
+        onAnswer(normaliser(saisie) === normaliser(guessDepartement[1]), saisie)
     }
 
     const couleur = (index) => {
@@ -29,7 +37,7 @@ const CelluleRegion = ({ guessDepartement, guessPattern, guessData, onAnswer }) 
             <Paper sx={{ p: 2, mb: 2 }}>
                 <Typography>Trouve la région associée au code : {guessDepartement[0]}</Typography>
             </Paper>
-            {guessData.length === 3 && guessPattern.length === 4 && (
+            {mode > 0 ? (
                 <Box
                     sx={{
                         display: 'grid',
@@ -44,9 +52,20 @@ const CelluleRegion = ({ guessDepartement, guessPattern, guessData, onAnswer }) 
                             color={couleur(index)}
                             onClick={() => {handleResponse(index)}}
                         >
-                            {choix[index][3]}
+                            {choix[index][1]}
                         </Button>
                     ))}
+                </Box>
+            ):(
+                <Box component="form" onSubmit={handleSaisie} sx={{ display: 'flex', gap: 2 }}>
+                    <TextField
+                        label="Réponse"
+                        variant="outlined"
+                        value={saisie}
+                        onChange={(event) => setSaisie(event.target.value)}
+                        fullWidth
+                    />
+                    <Button type="submit" variant="contained">Valider</Button>
                 </Box>
             )}
         </Paper>
