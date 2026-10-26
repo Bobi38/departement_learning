@@ -6,9 +6,17 @@ export const settingsZustand = create (
         (set)=> ({
             carte: { start: 0, end: 95 },
             mode: 3,
+            lastgame: [],
 
-            setCarte: (carte) => set({carte}),
-            setMode: (mode) => set({mode})
+            setCarte: (carte) => set({carte, lastgame: []}),
+            setMode: (mode) => set({mode}),
+            addGame: (game) => set((state) =>
+            {
+                const lastgame = [...state.lastgame]
+                lastgame.push(game)
+                return { lastgame: lastgame.slice(-7) }
+            }),
+            cleanGame: () => set({ lastgame: [] })
         }),
         {
             name: 'settings-zustand',

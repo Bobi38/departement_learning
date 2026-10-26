@@ -2,7 +2,8 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Slider,
 import { departement } from '../../data'
 import { settingsZustand } from '../../zustand/settingsZustand.js'
 
-const MIN_DISTANCE = 3
+// 10 départements minimum : écart de 9 entre les deux poignées
+const MIN_DISTANCE = 9
 const LAST = departement.length - 1
 
 export default function SettingsDialog({ open, onClose }) {
@@ -14,9 +15,9 @@ export default function SettingsDialog({ open, onClose }) {
     const handleChange = (event, newValue, activeThumb) => {
         if (!Array.isArray(newValue)) return
         if (activeThumb === 0) {
-            setCarte({ start: Math.min(newValue[0], carte.end - MIN_DISTANCE), end: carte.end })
+            setCarte({ start: Math.max(0, Math.min(newValue[0], carte.end - MIN_DISTANCE)), end: carte.end })
         } else {
-            setCarte({ start: carte.start, end: Math.max(newValue[1], carte.start + MIN_DISTANCE) })
+            setCarte({ start: carte.start, end: Math.min(LAST, Math.max(newValue[1], carte.start + MIN_DISTANCE)) })
         }
     }
 
@@ -52,10 +53,12 @@ export default function SettingsDialog({ open, onClose }) {
                     />
                 </Box>
             </DialogContent>
-            <Typography>Avec aide</Typography>
-            <Box>
-                <Button color onClick={() => setMode(0)}>Non</Button>
-                <Button onClick={() => setMode(3)}>Oui</Button>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 3, pb: 2 }}>
+                <Typography>Avec aide</Typography>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Button variant="outlined" color={mode === 0 ? "success" : "primary"} onClick={() => setMode(0)}>Non</Button>
+                    <Button variant="outlined" color={mode === 3 ? "success" : "primary"} onClick={() => setMode(3)}>Oui</Button>
+                </Box>
             </Box>
             <DialogActions>
                 <Button onClick={() => setCarte({ start: 0, end: LAST })}>Tous</Button>

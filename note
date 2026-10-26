@@ -31,6 +31,11 @@ gap crée un espace entre les enfants d'un composant flex ou grid.
 
 borderaddius: arrondie
 
+box avec item sur la meme ligne 
+
+sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 3, pb: 2 }}
+
+
 
 copnnect deux network
 

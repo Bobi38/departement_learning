@@ -1,59 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import {Button, Paper, Box, Container, Typography, TextField, Stepper, Step, StepLabel} from "@mui/material";
 import { departement, pattern, pattern2, dataChrono } from "../../data";
 import { settingsZustand } from "../../zustand/settingsZustand.js";
-
-// import CelluleCarte from "./CelluleCarte"
-// import CelluleRegion from "./CelulleRegion"
-// import CelluleDepartement from "./CelluleDepartement"
-// import CelluleChefLieu from "./CelulleChefLieu"
-// import CelluleResultat from "./CelulleResultat"
-
-// const steps = [
-//     {
-//         titre : 'Carte',
-//         header : CelluleCarte,
-//         pattern : [],
-//         other: [],
-//         answerBool : null,
-//         answer : null,
-//     },
-//     {
-//         titre : 'Région',
-//         header : CelluleRegion,
-//         pattern : [],
-//         other: [],
-//         answerBool : null,
-//         answer: null
-//     },
-//     {
-//         titre : 'Département',
-//         header : CelluleDepartement,
-//         pattern : [],
-//         other: [],
-//         answerBool : null,
-//         answer : null,
-//     },
-//     {
-//         titre : 'Chef-lieu',
-//         header : CelluleChefLieu,
-//         pattern : [],
-//         other: [],
-//         answerBool : null,
-//         answer : null,
-//     },
-//     {
-//         titre: 'Résultat',
-//         header: CelluleResultat,
-//         pattern : [],
-//         other: [],
-//         answer : null,
-//     }
-// ];
-
-// const randomPattern = () => {
-//     return pattern[Math.floor(Math.random() * pattern.length)];
-// }
+import CelluleQuestion from "./CelluleQuestion.jsx";
 
 const randomPattern = (mode) => {
     const liste = mode === 1 ? pattern2 : pattern
@@ -62,89 +11,126 @@ const randomPattern = (mode) => {
 
 const HeadChrono = () =>
 {
-        const [data, setData] = useState([])
-        const [partie, setPartie] = useState([])
-        const [activeStep, setActiveStep] = useState(0);
-        const mode = settingsZustand((state) => state.mode)
-        
-        const randomData = (guess, mode) => {
-            const data = []
-            while (data.length < mode) {
-                const candidat = departement[Math.floor(Math.random() * departement.length)]
-                if (candidat[0] === guess)
-                    continue
-                if (data.some((d) => d[1] === candidat[1]))
-                    continue
-                data.push(candidat)
-            }
-            return data
-        }
+    const [result, setResult] = useState(0)
+    const [countAsk, setCountAsk] = useState(0)
+    const [partie, setPartie] = useState([])
+    const [activeStep, setActiveStep] = useState(0);
+    const [step, setStep] = useState(null)
+    const [end, setEnd] = useState(false)
+    const [start, setStart] = useState(false)
+    const mode = settingsZustand((state) => state.mode)
+    const carte = settingsZustand((state) => state.carte)
+    const chronoTimer = useRef(null)
+    const pageTimer = useRef(null)
 
-        const randomPartie = () => {
-            const data = []
-            let tmp = [...dataChrono]
-            while (data.length < 100) {
-                const i = Math.floor(Math.random() * tmp.length)
-                const question = tmp.splice(i, 1)[0]
-                data.push(mode > 0 ? { ...question, other: randomData(question.index, mode), pattern: randomPattern(mode) } : question)
-            }
-            console.log(data)
-            setPartie(data)
-        }
+    const clearTimers = () => {
+        clearTimeout(chronoTimer.current)
+        clearTimeout(pageTimer.current)
+    }
 
-    // const handleRandom = () => {
-    //     const plage = departement.slice(carte.start, carte.end + 1)
-    //     const guess = plage[Math.floor(Math.random() * plage.length)];
-    //     setGuessDepartement(guess);
-    //     setPartie(steps.map((step) => ({
-    //         ...step,
-    //         pattern : randomPattern(),
-    //         other : randomData(guess),
-    //     })))
-    //     setActiveStep(0)
-    // }
+    const randomData = (response, code, mode) => {
+        const data = []
+        while (data.length < 3) {
+            const candidat = departement[Math.floor(Math.random() * departement.length)]
+            if (candidat[code] === response)
+                continue
+            if (data.includes(candidat[code]))
+                continue
+            data.push(candidat[code])
+        }
+        return data
+    }
+
+    const randomPartie = () => {
+        const data = []
+        const codes = departement.slice(carte.start, carte.end + 1).map((d) => d[0])
+        let tmp = dataChrono.filter((question) => codes.includes(question.index))
+        while (data.length < 100 && tmp.length > 0) {
+            const i = Math.floor(Math.random() * tmp.length)
+            const question = tmp.splice(i, 1)[0]
+            data.push(mode > 0 ? { ...question, other: randomData(question.response, question.code, mode), pattern: randomPattern(mode), answer: false } : question)
+        }
+        console.log(data)
+        setPartie(data)
+    }
+
+    const changePage = () => {
+        pageTimer.current = setTimeout(() => {
+            setActiveStep((current) => current + 1);
+        }, 750);
+    };
+
+    const startChrono = () => {
+        clearTimeout(chronoTimer.current)
+        setStart(true)
+        setEnd(false)
+        chronoTimer.current = setTimeout(() => {
+            setStart(false)
+            setEnd(true)
+        }, 60000)
+    }
+
+    const startParti = () =>
+    {
+        clearTimers()
+        setEnd(false)
+        setStart(false)
+        setActiveStep(0)
+        setCountAsk(0)
+        setResult(0)
+        randomPartie(dataChrono)
+    }
 
     useEffect(() =>
     {
-        randomPartie(dataChrono)
+        startParti()
+        return clearTimers
     }, [])
 
-    // if (!guessDepartement) return null
+    useEffect(() =>
+    {
+        if (partie.length > 0 && activeStep >= partie.length)
+        {
+            clearTimeout(chronoTimer.current)
+            setStart(false)
+            setEnd(true)
+        }
+        else
+            setStep(partie[activeStep] ?? null)
+    }, [partie, activeStep])
 
-    // function handleAnswer(estJuste, response){
-    //     setPartie((current) => current.map((s, index) =>
-    //         index === activeStep ? { ...s, answerBool : estJuste, answer: response } : s
-    //     ))
-    // }
-
-    // const step = partie[activeStep]
-    // const ActiveCellule = step.header
+    if (!step) return null
 
     return (
         <Box>
-            <Typography>coucou</Typography>
-            {/* <Stepper activeStep={activeStep} sx={{ mb: 3 }} alternativeLabel>
-                {partie.map((cel, index) => (
-                    <Step key={index}>
-                        <StepLabel>{cel.titre}</StepLabel>
-                    </Step>
-                ))}
-            </Stepper>
-            <Paper sx={{p: 2}}>
-                <Typography variant="h6"></Typography>
-                <ActiveCellule guessDepartement={guessDepartement} guessPattern={step.pattern} guessData={step.other} onAnswer={handleAnswer} partie={partie} steps={steps} />
-            </Paper>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                {activeStep < partie.length - 1 && step.answer != null ? (
-                    <Button variant="contained" onClick={() => setActiveStep(activeStep + 1)}>
-                        Suivant
-                    </Button>
-                ) : (
-                    <Button variant="contained" onClick={handleRandom}>
+            {!start && !end && (
+                <>
+                    <Button variant="contained" onClick={startChrono}>START</Button>
+                </>
+            )}
+            {start && !end && (
+            <>
+                <Box >
+                    <CelluleQuestion key={`${step.index}-${step.code}`} data={step} setCountAsk={setCountAsk} countAsk={countAsk} setResult={setResult} result={result} change={changePage}/>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                    <Button variant="contained" onClick={startParti}>
                         Rejouer
                     </Button>
-                )}
-            </Box> */}
+                </Box>
+            </>
+            )}
+            {end && !start && (
+                <Paper>
+                    <Typography>FINI</Typography>
+                    <Typography>Score: {result} / {countAsk}</Typography>
+                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                        <Button variant="contained" onClick={startParti}>
+                            Rejouer
+                        </Button>
+                    </Box>
+                </Paper>
+            )}
         </Box>
     )
 }

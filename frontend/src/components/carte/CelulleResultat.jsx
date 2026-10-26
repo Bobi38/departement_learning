@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Paper, Box, Typography, Popover } from "@mui/material";
 import France from "@socialgouv/react-departements";
 import { departement } from "../../data";
+import { settingsZustand } from "../../zustand/settingsZustand.js";
+
 
 const COLOR = "#74B4FF";
 const HIGHLIGHT_COLOR = "#b3ff75";
@@ -31,6 +33,7 @@ const CelluleResultat = ({ guessDepartement, partie }) =>
 {
     const [infoAnchor, setInfoAnchor] = useState(null)
     const [infoCodes, setInfoCodes] = useState([])
+    const addGame = settingsZustand((state) => state.addGame)
 
     const etapes = partie.slice(0, -1)
     const score = etapes.filter((etape) => etape.answerBool).length
@@ -39,7 +42,6 @@ const CelluleResultat = ({ guessDepartement, partie }) =>
     const codesFausse = idReponseFausse ? codesDe(carte.answer) : []
     const codesBonne = [normaliserCode(String(guessDepartement[0]))]
 
-    // Clic sur la carte : n'ouvre la bulle que sur la mauvaise réponse ou la bonne
     const handleClick = (event) => {
         const forme = event.target.closest('[id^="dpt-"]')
         if (!forme) return
@@ -53,6 +55,11 @@ const CelluleResultat = ({ guessDepartement, partie }) =>
     const infos = infoCodes
         .map((code) => departement.find((d) => d[0] === code))
         .filter(Boolean)
+
+    useEffect(() =>
+    {
+        addGame(guessDepartement[0])
+    }, [])
 
     return (
         <Paper sx={{ p: 2 }}>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import {Button, Paper, Box, Container, Typography, TextField, Stepper, Step, StepLabel} from "@mui/material";
+import { departement } from "../../data";
 
 
 const questions =
@@ -10,13 +11,38 @@ const questions =
     "Quel est le chef lieu de ce code: "
 ]
 
-const CelluleQuestion = ({data, questionAsk, result}) =>
+const CelluleQuestion = ({data, setCountAsk, countAsk, setResult, result, change}) =>
 {
-    const {index, code, response, question, pattern, other} = data
+    const {code, response, question, pattern, other} = data
+    const [clique, setClique] = useState(null)
+
+    useEffect(() =>
+    {
+        setClique(null)
+    }, [data])
+
+    const choix = [ ...other, response]
+
+    const handleResponse = (i) =>
+    {
+        if (clique !== null) return
+        setClique(i)
+        if (choix[i] == response)
+            setResult(result + 1)
+        setCountAsk(countAsk + 1)
+        change()
+    }
+
+    const couleur = (i) =>
+    {
+        if (clique === null) return "primary"
+        if (choix[i] === response) return "success"
+        return i === clique ? "error" : "primary"
+    }
 
     return (
         <Paper>
-            <Typography>{question[code]} {response}</Typography>
+            <Typography>{questions[code]} {question}</Typography>
                 <Box
                     sx={{
                         display: 'grid',
@@ -24,14 +50,14 @@ const CelluleQuestion = ({data, questionAsk, result}) =>
                         gap: 2,
                     }}
                 >
-                    {pattern.map((index) => (
+                    {pattern.map((i) => (
                         <Button
-                            key={index}
+                            key={i}
                             variant="contained"
-                            color={couleur(index)}
-                            onClick={() => {handleResponse(index)}}
+                            color={couleur(i)}
+                            onClick={() => {handleResponse(i)}}
                         >
-                            {other[index][code]}
+                            {choix[i]}
                         </Button>
                     ))}
                 </Box>
@@ -39,3 +65,5 @@ const CelluleQuestion = ({data, questionAsk, result}) =>
 
     )
 }
+
+export default CelluleQuestion

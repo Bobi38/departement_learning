@@ -1,0 +1,6 @@
+services:
+  front:
+    build: ./frontend
+    image: geofrance-front:dev
+    ports:
+      - "6969:6969"

@@ -50,7 +50,6 @@ const steps = [
     }
 ];
 
-// mode = nombre de mauvaises réponses proposées (0 = saisie libre)
 const randomPattern = (mode) => {
     const liste = mode === 1 ? pattern2 : pattern
     return liste[Math.floor(Math.random() * liste.length)];
@@ -76,10 +75,20 @@ const HeadCarte = () =>
     const [activeStep, setActiveStep] = useState(0);
     const carte = settingsZustand((state) => state.carte)
     const mode = settingsZustand((state) => state.mode)
+    const lastgame = settingsZustand((state) => state.lastgame)
+
+    console.log(lastgame)
+
+    const initDepartement = () => {
+        const plage = departement.slice(carte.start, carte.end + 1)
+        const disponibles = plage.filter((d) => !lastgame.includes(d[0]))
+        const choix = disponibles.length > 0 ? disponibles : plage
+        const guess = choix[Math.floor(Math.random() * choix.length)];
+        return guess 
+    }
 
     const handleRandom = () => {
-        const plage = departement.slice(carte.start, carte.end + 1)
-        const guess = plage[Math.floor(Math.random() * plage.length)];
+        const guess = initDepartement()
         setGuessDepartement(guess);
         setPartie(steps.map((step) => ({
             ...step,
@@ -93,8 +102,6 @@ const HeadCarte = () =>
     {
         handleRandom()
     }, [])
-
-    if (!guessDepartement) return null
 
     function handleAnswer(estJuste, response){
         setPartie((current) => current.map((s, index) =>
