@@ -70,6 +70,7 @@ const randomData = (guess, mode) => {
 
 const HeadCarte = () =>
 {
+
     const [guessDepartement, setGuessDepartement] = useState(null)
     const [partie, setPartie] = useState(steps)
     const [activeStep, setActiveStep] = useState(0);
@@ -77,12 +78,10 @@ const HeadCarte = () =>
     const mode = settingsZustand((state) => state.mode)
     const lastgame = settingsZustand((state) => state.lastgame)
 
-    console.log(lastgame)
-
     const initDepartement = () => {
         const plage = departement.slice(carte.start, carte.end + 1)
         const disponibles = plage.filter((d) => !lastgame.includes(d[0]))
-        const choix = disponibles.length > 0 ? disponibles : plage
+        const choix = disponibles.length > 0 ? disponibles : (plage.length > 0 ? plage : departement)
         const guess = choix[Math.floor(Math.random() * choix.length)];
         return guess 
     }
@@ -109,6 +108,7 @@ const HeadCarte = () =>
         ))
     }
 
+    if (guessDepartement == null) return null
     const step = partie[activeStep]
     const ActiveCellule = step.header
 

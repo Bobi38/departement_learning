@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import {Button, Paper, Box, Container, Typography, TextField, Stepper, Step, StepLabel} from "@mui/material";
+import {Button, Paper, Box, Container, Typography, TextField, LinearProgress} from "@mui/material";
 import { departement, pattern, pattern2, dataChrono } from "../../data";
 import { settingsZustand } from "../../zustand/settingsZustand.js";
 import CelluleQuestion from "./CelluleQuestion.jsx";
@@ -12,6 +12,7 @@ const randomPattern = (mode) => {
 const HeadChrono = () =>
 {
     const [result, setResult] = useState(0)
+    const [chrono, setChrono] = useState(60)
     const [countAsk, setCountAsk] = useState(0)
     const [partie, setPartie] = useState([])
     const [activeStep, setActiveStep] = useState(0);
@@ -22,10 +23,13 @@ const HeadChrono = () =>
     const carte = settingsZustand((state) => state.carte)
     const chronoTimer = useRef(null)
     const pageTimer = useRef(null)
+    const chronoSecond = useRef(null)
 
     const clearTimers = () => {
         clearTimeout(chronoTimer.current)
         clearTimeout(pageTimer.current)
+        clearInterval(chronoSecond.current)
+        setChrono(60)
     }
 
     const randomData = (response, code, mode) => {
@@ -62,9 +66,18 @@ const HeadChrono = () =>
 
     const startChrono = () => {
         clearTimeout(chronoTimer.current)
+        clearInterval(chronoSecond.current)
         setStart(true)
         setEnd(false)
+        chronoSecond.current = setInterval(() =>
+        {
+            setChrono(prev => {
+                return prev-1
+            })
+        }, 1000)
+
         chronoTimer.current = setTimeout(() => {
+            clearInterval(chronoSecond.current)
             setStart(false)
             setEnd(true)
         }, 60000)
@@ -78,6 +91,7 @@ const HeadChrono = () =>
         setActiveStep(0)
         setCountAsk(0)
         setResult(0)
+        setChrono(60)
         randomPartie(dataChrono)
     }
 
@@ -89,9 +103,10 @@ const HeadChrono = () =>
 
     useEffect(() =>
     {
+
         if (partie.length > 0 && activeStep >= partie.length)
         {
-            clearTimeout(chronoTimer.current)
+            clearTimers()
             setStart(false)
             setEnd(true)
         }
@@ -101,34 +116,58 @@ const HeadChrono = () =>
 
     if (!step) return null
 
+    const urgent = chrono <= 10
+
     return (
-        <Box>
+        <Box sx={{ maxWidth: 600, mx: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Paper sx={{ p: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                    <Box>
+                        <Typography variant="caption" color="text.secondary">Temps</Typography>
+                        <Typography variant="h4" color={urgent ? "error" : "text.primary"} sx={{ fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
+                            {chrono}s
+                        </Typography>
+                    </Box>
+                    <Box sx={{ textAlign: 'right' }}>
+                        <Typography variant="caption" color="text.secondary">Score</Typography>
+                        <Typography variant="h4" sx={{ lineHeight: 1 }}>{result} / {countAsk}</Typography>
+                    </Box>
+                </Box>
+                <LinearProgress
+                    variant="determinate"
+                    value={(chrono / 60) * 100}
+                    color={urgent ? "error" : "primary"}
+                    sx={{ height: 8, borderRadius: 4 }}
+                />
+            </Paper>
+
             {!start && !end && (
+                <Paper sx={{ p: 4, textAlign: 'center' }}>
+                    <Typography variant="h6" gutterBottom>Prêt ?</Typography>
+                    <Typography color="text.secondary" sx={{ mb: 3 }}>
+                        Réponds à un maximum de questions en 60 secondes.
+                    </Typography>
+                    <Button variant="contained" size="large" onClick={startChrono}>START</Button>
+                </Paper>
+            )}
+
+            {start && !end && (
                 <>
-                    <Button variant="contained" onClick={startChrono}>START</Button>
+                    <CelluleQuestion key={`${step.index}-${step.code}`} data={step} setCountAsk={setCountAsk} countAsk={countAsk} setResult={setResult} result={result} change={changePage}/>
+                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                        <Button variant="outlined" onClick={startParti}>Rejouer</Button>
+                    </Box>
                 </>
             )}
-            {start && !end && (
-            <>
-                <Box >
-                    <CelluleQuestion key={`${step.index}-${step.code}`} data={step} setCountAsk={setCountAsk} countAsk={countAsk} setResult={setResult} result={result} change={changePage}/>
-                </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                    <Button variant="contained" onClick={startParti}>
-                        Rejouer
-                    </Button>
-                </Box>
-            </>
-            )}
+
             {end && !start && (
-                <Paper>
-                    <Typography>FINI</Typography>
-                    <Typography>Score: {result} / {countAsk}</Typography>
-                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                        <Button variant="contained" onClick={startParti}>
-                            Rejouer
-                        </Button>
-                    </Box>
+                <Paper sx={{ p: 4, textAlign: 'center' }}>
+                    <Typography variant="h5" gutterBottom>Terminé !</Typography>
+                    <Typography variant="h3" sx={{ mb: 1 }}>{result} / {countAsk}</Typography>
+                    <Typography color="text.secondary" sx={{ mb: 3 }}>
+                        {countAsk > 0 ? Math.round((result / countAsk) * 100) : 0}% de bonnes réponses
+                    </Typography>
+                    <Button variant="contained" size="large" onClick={startParti}>Rejouer</Button>
                 </Paper>
             )}
         </Box>

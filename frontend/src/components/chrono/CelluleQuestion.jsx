@@ -41,8 +41,9 @@ const CelluleQuestion = ({data, setCountAsk, countAsk, setResult, result, change
     }
 
     return (
-        <Paper>
-            <Typography>{questions[code]} {question}</Typography>
+        <Paper sx={{ p: 3 }}>
+            <Typography variant="body2" color="text.secondary">{questions[code]}</Typography>
+            <Typography variant="h4" sx={{ mb: 3, textAlign: 'center' }}>{question}</Typography>
                 <Box
                     sx={{
                         display: 'grid',
@@ -54,6 +55,7 @@ const CelluleQuestion = ({data, setCountAsk, countAsk, setResult, result, change
                         <Button
                             key={i}
                             variant="contained"
+                            size="large"
                             color={couleur(i)}
                             onClick={() => {handleResponse(i)}}
                         >

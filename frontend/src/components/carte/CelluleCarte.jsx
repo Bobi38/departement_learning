@@ -18,13 +18,15 @@ const CelluleCarte = ({ guessDepartement, onAnswer }) =>
     if (departement < 10)
       departement = departement.slice(1)
     setSelected([departement])
-    onAnswer(departement === String(guessDepartement[0]), departement)
+    onAnswer(departement === String(guessDepartement?.[0]), departement)
   };
 
   const handleResponse = () => {
     setSelected([guess]);
   };
 
+
+  if (!guessDepartement) return null
 
   return (
     <Box>
