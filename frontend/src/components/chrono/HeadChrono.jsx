@@ -3,6 +3,7 @@ import {Button, Paper, Box, Container, Typography, TextField, LinearProgress} fr
 import { departement, pattern, pattern2, dataChrono } from "../../data";
 import { settingsZustand } from "../../zustand/settingsZustand.js";
 import CelluleQuestion from "./CelluleQuestion.jsx";
+import CelluleChrono from "./CelluleChrono.jsx";
 
 const randomPattern = (mode) => {
     const liste = mode === 1 ? pattern2 : pattern
@@ -120,27 +121,7 @@ const HeadChrono = () =>
 
     return (
         <Box sx={{ maxWidth: 600, mx: 'auto', display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Paper sx={{ p: 2 }}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
-                    <Box>
-                        <Typography variant="caption" color="text.secondary">Temps</Typography>
-                        <Typography variant="h4" color={urgent ? "error" : "text.primary"} sx={{ fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
-                            {chrono}s
-                        </Typography>
-                    </Box>
-                    <Box sx={{ textAlign: 'right' }}>
-                        <Typography variant="caption" color="text.secondary">Score</Typography>
-                        <Typography variant="h4" sx={{ lineHeight: 1 }}>{result} / {countAsk}</Typography>
-                    </Box>
-                </Box>
-                <LinearProgress
-                    variant="determinate"
-                    value={(chrono / 60) * 100}
-                    color={urgent ? "error" : "primary"}
-                    sx={{ height: 8, borderRadius: 4 }}
-                />
-            </Paper>
-
+            <CelluleChrono chrono={chrono} result={result} countAsk={countAsk}/>
             {!start && !end && (
                 <Paper sx={{ p: 4, textAlign: 'center' }}>
                     <Typography variant="h6" gutterBottom>Prêt ?</Typography>
