@@ -10,7 +10,7 @@ const CartePage = () =>
                 <Typography variant="h4" component="h1" gutterBottom>
                     Viens réviser
                 </Typography>
-                <HeadCarte/>
+                <HeadLearn/>
             </Container>
         </Mainlayout>
     )

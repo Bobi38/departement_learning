@@ -13,5 +13,10 @@ export const data = [
         url: "/chrono",
         titre: "Défi chronométré",
         description: "Répondez au plus de questions possible avant la fin du temps imparti."
-    }
+    },
+    {
+        url: "/learn",
+        titre: "Viens réviser",
+        description: "Répondez au plus de questions possible avant la fin du temps imparti."
+    }, 
 ]

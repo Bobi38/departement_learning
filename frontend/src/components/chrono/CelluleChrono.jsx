@@ -7,9 +7,7 @@ const CelluleChrono = ({chrono, result, countAsk}) =>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
                 <Box>
                     <Typography variant="caption" color="text.secondary">Temps</Typography>
-                    <Typography variant="h4" color={urgent ? "error" : "text.primary"} sx={{ fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>
-                        {chrono}s
-                    </Typography>
+                    <Typography variant="h4" color={urgent ? "error" : "text.primary"} sx={{ fontVariantNumeric: 'tabular-nums', lineHeight: 1 }}>{chrono}s</Typography>
                 </Box>
                 <Box sx={{ textAlign: 'right' }}>
                     <Typography variant="caption" color="text.secondary">Score</Typography>
