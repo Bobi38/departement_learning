@@ -1,8 +1,8 @@
 import Mainlayout from '../../layout/MainLayout'
 import { Container, Typography } from '@mui/material'
-import {HeadCarte} from '../../components/carte/'
+import HeadLearn from '../../components/learn/HeadLearn'
 
-const CartePage = () =>
+const LearnPage = () =>
 {
     return (
         <Mainlayout>
@@ -16,4 +16,4 @@ const CartePage = () =>
     )
 }
 
-export default CartePage
+export default LearnPage

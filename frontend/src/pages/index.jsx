@@ -1,7 +1,7 @@
-import Mainlayout from '../../layout/MainLayout'
+import Mainlayout from '../layout/MainLayout'
 import { Box, Container, Typography } from '@mui/material'
-import CelluleGameHome from '../../components/home/CelluleGameHome'
-import { data } from "../../data/game"
+import CelluleGameHome from '../components/home/CelluleGameHome'
+import { data } from "../data/game"
 
 const HomePage = () =>
 {

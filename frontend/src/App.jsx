@@ -1,14 +1,13 @@
-import { useMemo } from 'react'
-import { BrowserRouter, Route, Routes } from 'react-router'
+import { Suspense, useMemo } from 'react'
+import { BrowserRouter, useRoutes } from 'react-router'
 import { ThemeProvider } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import { Toaster } from 'sonner'
-import HomePage from './pages/home/index.jsx'
-import CartePage from './pages/carte/index.jsx'
-import RegionPage from './pages/region/index.jsx'
-import ChronoPage from './pages/chrono/index.jsx'
+import routes from '~react-pages'
 import { colorZustand } from './zustand/colorZustand.js'
 import theme from './style/theme.js'
+
+const AppRoutes = () => useRoutes(routes)
 
 export default function App() {
     const mode = colorZustand((state) => state.mode)
@@ -19,12 +18,9 @@ export default function App() {
             <CssBaseline />
             <Toaster theme={mode} richColors />
             <BrowserRouter>
-                <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/carte" element={<CartePage />} />
-                    <Route path="/region" element={<RegionPage />} />
-                    <Route path="/chrono" element={<ChronoPage />} />
-                </Routes>
+                <Suspense fallback={null}>
+                    <AppRoutes />
+                </Suspense>
             </BrowserRouter>
         </ThemeProvider>
     )

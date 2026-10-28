@@ -17,6 +17,6 @@ export const data = [
     {
         url: "/learn",
         titre: "Viens réviser",
-        description: "Répondez au plus de questions possible avant la fin du temps imparti."
+        description: "Consultez la liste des départements avec leur région et leur chef-lieu."
     }, 
 ]
